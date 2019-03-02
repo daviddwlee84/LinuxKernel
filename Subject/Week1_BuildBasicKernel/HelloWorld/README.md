@@ -5,7 +5,7 @@
   * make all
   * make clean
 
-## Module Program
+## Module Programming
 
 ### Init/Exit Macros
 

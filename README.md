@@ -6,8 +6,8 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 
 Week  |Subject
 ------|-----------
-Week 0|[Compile Linux 4.19.23 kernel on Ubuntu](Notes/CompileLinuxKernel.md)
-Week 1|[Linux kernel Hello World](Subject/HelloWorld/README.md)
+Week 0|[Compile Linux 4.19.23 kernel on Ubuntu](Subject/Week0_CompileLinuxKernel/CompileLinuxKernel.md)
+Week 1|[Build Basic Linux Kernel](Subject/Week1_BuildBasicKernel/BuildBasicKernel.md)
 
 ## Resources
 

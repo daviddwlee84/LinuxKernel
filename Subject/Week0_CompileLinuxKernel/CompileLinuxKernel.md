@@ -1,4 +1,4 @@
-# Homework 1: Compile Linux Kernel
+# Compile Linux Kernel
 
 ## Brief Description
 
