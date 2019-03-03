@@ -17,3 +17,13 @@
   * `MODULE_LICENSE()`
   * `MODULE_DESCRIPTION()`
   * `MODULE_AUTHOR()`
+
+## Export Symbol
+
+A module wants to export a symbol (i.e. *function* or *global variable*)
+
+* MACROs
+  * `EXPORT_SYMBOL()`
+  * `EXPORT_SYMBOL_GPL()` (only the kernrl who also uses GPL license can use the exported symbol)
+
+> A symbol must be exported at the global part of the code.

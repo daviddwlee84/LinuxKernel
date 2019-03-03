@@ -34,6 +34,8 @@ SystemTap provides free software (GPL) infrastructure to simplify the gathering 
 
 LKM (Loadable Kernel Module)
 
+* [The Linux Kernel Module Programming Guide](https://www.tldp.org/LDP/lkmpg/2.6/html/index.html)
+
 ### Difference between kernel module programming and C application programming
 
 ### Command
@@ -69,3 +71,7 @@ This is similar with **insmod**, be used to load module into kernel.
 ```
 modprobe
 ```
+
+## Others
+
+### Difference between Linux 2.4 and Linux 2.6 up while programming

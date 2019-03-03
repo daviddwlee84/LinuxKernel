@@ -35,6 +35,8 @@ static void __init hello_exit(void):
 
 Definition: [`<linux/init.h>`](https://github.com/torvalds/linux/blob/master/include/linux/init.h)
 
+* [The __init and __exit Macros](https://www.tldp.org/LDP/lkmpg/2.6/html/x245.html)
+
 ## Steps
 
 ### Build Kernel
