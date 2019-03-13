@@ -4,6 +4,28 @@
 
 ![Linux kernel split view](images/KernelSplitView.gif)
 
+## Concept
+
+### Linux Kernel Module
+
+```txt
+┌-----------------┐                   ┌-----------------┐
+|   USER SPACE    | ---- syscall ---> |   KERNEL SPACE  |
+|   standard      |                   |   Operating     |
+|   "runtime"     |                   |   System        |
+|   libraries     | <--- sysret ----- |   kernel        |
+└-----------------┘                   └-----------------┘
+ ret |  call^                            ret |  call^
+     v      |                                v      |
+┌-----------------┐                   ┌-----------------┐
+|   application   |                   |     module      |
+└-----------------┘                   └-----------------┘
+                                               ^
+                                               |
+Linux allow us to write our own installable kernel modules
+and add them to a running system
+```
+
 ## Resource
 
 * [wiki - Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel)
