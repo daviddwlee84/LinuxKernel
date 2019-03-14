@@ -472,7 +472,43 @@ root         1     0  0 16:41 ?        00:00:03 /sbin/init splash
 1059    static int __ref kernel_init(void *unused)
 ```
 
+First, `kernel_init()` will free some memory
+
+* PTI - Page Table Isolation
+  * [Wiki - Kernel page-table isolation](https://en.wikipedia.org/wiki/Kernel_page-table_isolation)
+    ![Kernel PTI](https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Kernel_page-table_isolation.svg/476px-Kernel_page-table_isolation.svg.png)
+  * Separating user-space and kernel-space page tables entirely
+    * One set of page tables includes both kernel-space and user-space addresses same as before, but it is only used when the system is running in kernel mode.
+    * The second set of page tables for use in user mode contains a copy of user-space and a minimal set of kernel-space mappings that provides the information needed to enter or exit system calls, interrupts and exceptions.
+
+It will execute some `initrd` things (i.e. ramdisk_execute_command).
+
+If there is commend need to execute then it will execute first.
+
+```txt
+[include/linux/init.h]
+253 #define __setup_param(str, unique_id, fn, early)            \
+254     static const char __setup_str_##unique_id[] __initconst     \
+255         __aligned(1) = str;                     \
+256     static struct obs_kernel_param __setup_##unique_id      \
+257         __used __section(.init.setup)               \
+258         __attribute__((aligned((sizeof(long)))))        \
+259         = { __setup_str_##unique_id, fn, early }
+
+261 #define __setup(str, fn)                        \
+262     __setup_param(str, fn, fn, 0)
+
+[init/main.c]
+349  __setup("init=", init_setup);
+
+334  static int __init init_setup(char *str){
+338      execute_command = str;
+```
+
+Will finally run the `/sbin/init` (the PID=1 process)
+
 ```c
+/* kernel_init() in init/main.c */
 static int __ref kernel_init(void *unused)
 
     int ret;
@@ -535,6 +571,163 @@ Files
 * [oops_test.c](oops_test/oops_test.c)
 * [Makefile](oops_test/Makefile)
 
+1. Compile using `make`
+   * Note that it should be compiled under 4.19.23 kernel or you will get the error from qemu at step 4
+        ```txt
+        version magic '4.18.0-16-generic SMP mod_unload' should be 4.19.23 SMP mod_unload'
+        insmod: can't insert 'oops_test.ko': invalid module
+        ```
+   * We can modify the `Makefile` to use 4.19.23's header, then we can comile at any other version Linux kernel
+     * i.e. set the path to `/lib/modules/4.19.23`
+   * Make sure you've [install the modules correctly](#Trouble-Shooting:-version-problem)
+2. Add module into `/lib` directory in our `busybox.img`
+    ```sh
+    sudo mount -o loop $(pwd)/busybox.img /mnt/disk
+    sudo cp oops_test/oops_test.ko /mnt/disk/lib/
+    sudo umount /mnt/disk
+    ```
+3. Boot the kernel using `qemu`
+    ```sh
+    sudo qemu-system-x86_64 -kernel bzImage -initrd initrd.img-4.19.23 -append "root=/dev/sda nokaslr" -boot c -hda busybox.img -k en-us -m 1024
+    ```
+4. Load our oops_test module
+    ```sh
+    cd /lib
+    insmod oops_test.ko
+    ```
+
+Then it should show the error message
+
+```txt
+[   39.786993] RIP: 0010:my_oops_init+0xc/0x1000 [oops_test]
+[   39.787086] Code: Bad RIP value
+...
+Killed
+```
+
+**Recompile oops_test.c with symbols**:
+
+I've add this in Makefile, and then use `make debug` to build
+
+```makefile
+MY_CFLAGS += -g -DDEBUG
+
+debug:
+	make -C /lib/modules/4.19.23/build M=$(PWD) modules;
+	EXTRA_CFLAGS="$(MY_CFLAGS)"
+```
+
+```sh
+# check the oops_test.ko with readelf
+$ readelf -S oops_test.ko | grep debug
+  [17] .debug_info       PROGBITS         0000000000000000  000004c0
+  [18] .rela.debug_info  RELA             0000000000000000  00017680
+  [19] .debug_abbrev     PROGBITS         0000000000000000  0000c050
+  [20] .debug_aranges    PROGBITS         0000000000000000  0000c988
+  [21] .rela.debug_arang RELA             0000000000000000  00029fb0
+  [22] .debug_ranges     PROGBITS         0000000000000000  0000c9e8
+  [23] .rela.debug_range RELA             0000000000000000  0002a010
+  [24] .debug_line       PROGBITS         0000000000000000  0000ca18
+  [25] .rela.debug_line  RELA             0000000000000000  0002a070
+  [26] .debug_str        PROGBITS         0000000000000000  0000d83e
+  [29] .debug_frame      PROGBITS         0000000000000000  00017110
+  [30] .rela.debug_frame RELA             0000000000000000  0002a0a0
+
+# check the oops_test.ko with nm (nm - list symbols from object files)
+$ nm oops_test.ko
+0000000000000000 T cleanup_module
+0000000000000000 T init_module
+0000000000000010 r __module_depends
+0000000000000000 t my_oops_exit
+0000000000000000 t my_oops_init
+0000000000000000 r _note_6
+                 U printk
+0000000000000000 D __this_module
+0000000000000000 r __UNIQUE_ID_license16
+0000000000000025 r __UNIQUE_ID_name17
+0000000000000019 r __UNIQUE_ID_retpoline18
+0000000000000034 r __UNIQUE_ID_vermagic16
+
+# check the oops_test.ko with objdump (objdump - display information from object files)
+$ objdump -t oops_test.ko           (all sections)
+$ objdump -t -j data oops_test.ko   (data section)
+$ objdump -t -j bss oops_test.ko    (BSS section)
+```
+
+> `(gdb) add-symbol-file module.ko text_addr -s .data data_addr -s .bss bss_addr`
+
+```txt
+$ gdb
+(gdb) add-symbol-file oops_test.ko
+The address where oops_test.ko has been loaded is missing
+(gdb) add-symbol-file oops_test.ko 0x00
+add symbol table from file "oops_test.ko" at
+	.text_addr = 0x0
+(y or n) y
+Reading symbols from oops_test.ko...done.
+```
+
+Then you should be able to set the breakpoints, list the function, and so on.
+
+```txt
+(gdb) break create_oops
+Breakpoint 1 at 0x30: file /home/daviddwlee84/x86_64_kDebug/oops_test/oops_test.c, line 7.
+(gdb) list my_oops_init
+7	    *(int *)0 = 0;
+8	}
+9	
+10	static int __init my_oops_init(void)
+11	{
+12	    printk(KERN_INFO "oops module init\n");
+13	    create_oops();
+14	    return 0;
+15	}
+16	
+```
+
+Refer to the error shown by `qemu` previously (`[   39.786993] RIP: 0010:my_oops_init+0xc/0x1000 [oops_test]`),
+we know the error is at `my_oops_init+0xc`, then we can locate the error:
+
+```txt
+(gdb) list *my_oops_init+0xc
+0x2b is in my_oops_init (/home/daviddwlee84/x86_64_kDebug/oops_test/oops_test.c:7).
+2	#include <linux/module.h>
+3	#include <linux/init.h>
+4	
+5	static void create_oops(void)
+6	{
+7	    *(int *)0 = 0;
+8	}
+9	
+10	static int __init my_oops_init(void)
+11	{
+```
+
+* [**The Kernel Newbie Corner: Kernel and Module Debugging with gdb**](https://www.linux.com/learn/kernel-newbie-corner-kernel-and-module-debugging-gdb)
+* [Stackoverflow - kernel module no debugging symbols found](https://stackoverflow.com/questions/28298220/kernel-module-no-debugging-symbols-found)
+
+#### Trouble Shooting: version problem
+
+> Linux kernel version headers location: `/lib/modules/linux_version/`
+
+When I use `sudo make install` it shows
+
+> WARNING: missing /lib/modules/4.19.23
+
+~~Then I create the folder by myself then reinstall it and solved~~
+
+Then it means you have to install modules by using `make modules_install`
+
+> Found other way to obtain others Linux version headers (But it may install `/usr/src/linux-headers-version/`)
+>
+> ```sh
+> sudo apt install linux-headers-$(uname -r)
+> # something do the same thing like
+> make headers_install
+> ```
+
+* [Building kernel modules for different linux version](https://stackoverflow.com/questions/10861872/building-kernel-modules-for-different-linux-version)
+
 ## Other Notes
 
 ### readelf
@@ -554,6 +747,13 @@ $ gcc -g test.c -o test.out
 $ gdb test.out
 
 (gdb) run
+```
+
+### less and more
+
+```sh
+make help | less
+make help | more
 ```
 
 ## Links
