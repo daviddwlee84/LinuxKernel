@@ -30,6 +30,19 @@ SystemTap provides free software (GPL) infrastructure to simplify the gathering 
 
 #### KGDB
 
+**Use Physical Two Machine**:
+
+* Development Machine
+* Target Machine
+
+Use serial port (RS-232 UART) or ethernet to connect with each other.
+
+[**Use Virtual Machine**](../Lab/Lab1_KernelDebug/KernelDebug.md#busybox) - busybox
+
+![KGDB logic](http://www.embeddedlinux.org.cn/EmbeddedLinuxPrimer/0136130550/images/14elp03.jpg)
+
+* [Using KGDB for Kernel Debugging](http://www.embeddedlinux.org.cn/EmbeddedLinuxPrimer/0136130550/ch14lev1sec2.html)
+
 ## Module Programming
 
 LKM (Loadable Kernel Module)
