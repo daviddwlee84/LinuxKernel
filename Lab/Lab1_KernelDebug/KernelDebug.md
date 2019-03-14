@@ -530,6 +530,11 @@ static int __ref kernel_init(void *unused)
 
 ### 2. Use Oops message to find out the error position in code
 
+Files
+
+* [oops_test.c](oops_test/oops_test.c)
+* [Makefile](oops_test/Makefile)
+
 ## Other Notes
 
 ### readelf
