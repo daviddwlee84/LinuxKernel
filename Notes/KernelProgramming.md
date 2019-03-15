@@ -8,6 +8,15 @@
 
 ## Kernel Debugging Technique
 
+> * Linux Kernel Development Ch18 Debugging
+>   * Oops
+>     * ksymoops
+>     * kallsyms
+>   * Magic SysRq Key
+>   * The Saga of a Kernel Debugger
+>     * gdb
+>     * kgdb
+
 ### Printk
 
 ### kprobe
@@ -25,6 +34,12 @@ SystemTap provides free software (GPL) infrastructure to simplify the gathering 
 ### The magic SysRq key
 
 ### Debug Tools
+
+> * [Linux Device Drivers - Ch4 Debugging Techniques](https://static.lwn.net/images/pdf/LDD3/ch04.pdf) - Debuggers and Related Tools
+>   * Using gdb
+>   * The kdb Kernel Debugger
+
+#### GDB
 
 #### KDB
 
