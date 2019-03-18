@@ -6,7 +6,7 @@
 //  内核模块添加：$sudo insmod tasklist.ko
 //  添加内核模块后读取并信息tasklist内核信息： $ cat /proc/tasklist
 //  内核模块删除：$sudo rmmod tasklist
-//	NOTE: Written and tested with Linux kernel version 4.15.6 
+//	NOTE: Written and tested with Linux kernel version 4.19.23
 //  strace函数可用于追踪系统调用,命令格式如下所示：
 //  $ strace cat /proc/tasklist
 //-------------------------------------------------------------------
@@ -26,6 +26,7 @@ static void * my_seq_start(struct seq_file *m, loff_t *pos)
    ///printk(KERN_INFO"Invoke start\n");   //可以输出调试信息
    if ( *pos == 0 )  // 表示遍历开始
    {
+     seq_puts( m, "#index\tpid\tstate\tcommand\n" );
 	   task = &init_task;	//遍历开始的记录地址
 	   return &task;   //返回一个非零值表示开始遍历
   }
@@ -40,10 +41,13 @@ static int my_seq_show(struct seq_file *m, void *v)
 {//获取进程的相关信息
   //printk(KERN_INFO"Invoke show\n");
   //输出进程序号				
-  seq_printf( m,  "#%-3d\t ", taskcounts++ );  
-  //输出进程pid?
-  //输出进程state?
-  //输出进程名称(comm)?
+  seq_printf( m, "#%-3d\t", taskcounts++ );  
+  //输出进程pid
+  seq_printf( m, "%d\t", task->pid );
+  //输出进程state
+  seq_printf( m, "%lx\t", task->state );
+  //输出进程名称(comm)
+  seq_printf( m, "%s\t", task->comm );
   seq_puts( m, "\n" );	  				  
   return 0; 
 }
@@ -52,7 +56,8 @@ static void * my_seq_next(struct seq_file *m, void *v, loff_t *pos)
 {
   //printk(KERN_INFO"Invoke next\n");  
   (*pos)++;   
-  //task指向下一个进程?
+  //task指向下一个进程
+  task = next_task(task);
   return NULL;
 
 }
@@ -87,7 +92,7 @@ static const struct file_operations my_proc =
 int __init my_init( void )
 {
 	struct proc_dir_entry* my_proc_entry;
-	printk( "<1>\nInstalling \'%s\' module\n", modname );
+	printk( "<1> Installing \'%s\' module\n", modname );
 	my_proc_entry = proc_create(modname, 0x644, NULL, &my_proc);//生成proc文件
 	if (NULL == my_proc_entry)
 	{
@@ -99,7 +104,7 @@ int __init my_init( void )
 void __exit my_exit( void )
 {
 	remove_proc_entry( modname, NULL );//删除proc文件
-	printk( "<1>Removing \'%s\' module\n", modname );	
+	printk( "<1> Removing \'%s\' module\n", modname );	
 }
 
 module_init(my_init);

@@ -1,6 +1,6 @@
-# Lab2
+# Lab2: Add Kernel Patch and Build Process Info Reader
 
-## Add Kernel Patch
+## 1. Add Kernel Patch
 
 Goal: Add patch to Linux 4.19.23 Kernel
 
@@ -68,8 +68,8 @@ setting -p0 gives the entire file name unmodified, -p1 gives without the leading
 * `---`: source file
 * `+++`: target file
 * `@@ -x,y +m,n @@`
-  * source file modified range from line x, total y lines
-  * corresponding to target file start from line m, total n lines
+  * source file modified range from line `x`, total `y` lines
+  * corresponding to target file start from line `m`, total `n` lines
 * `+`: add one line
 * `-`: subtract one line
 * No sign: refer the original line
@@ -137,7 +137,7 @@ $ cat /proc/sys/net/ipv4/tcp_rmem
     patching file net/ipv4/tcp_output.c
     ```
 
-    > The `-p` explain of patch command
+    > The `-p` explain of patch command (equivalent as above)
     >
     > ```sh
     > $ cd linux-4.19.23/net
@@ -167,9 +167,94 @@ sudo qemu-system-x86_64 -kernel arch/x86/boot/bzImage \
 
 > We can see that the default value is changed to 131072
 
-## Read Process Info Module
+## 2. Read Process Info Module
 
 Goal:
 
-* Implement a kernel module which create `/proc/tasklist` document
-* Read all the process information of system, and show its pid, state and name
+* Implement a kernel module which will create `/proc/tasklist` document
+* Read all the process information of system and show its pid, state and name
+
+### The /proc file system
+
+* [GeeksforGeeks - proc file system in Linux](https://www.geeksforgeeks.org/proc-file-system-linux/)
+* [Linux Filesystem Hierarchy - Ch1.14 /proc](https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/proc.html)
+
+> A *virtual file system*. **Process information pseudo-file system** which can be regarded as a *control* and *information centre* for the kernel.
+>
+> Quite a lot of system utilities are simply calls to files in this directory
+> (e.g. `lsmod` = `cat /proc/modules`, `lspci` = `cat /proc/pci`)
+
+It doesn't contain 'real' files but runtime system information (e.g. system memory, devices mounted, hardware configuration, etc)
+
+### Experiment Procedure
+
+> There is no `/proc/tasklist` file before hand.
+
+1. [Modify the given file and add functionality](#Step)
+2. Compile using `make`
+3. Add kernel module
+   * `sudo insmod tasklist.ko`
+4. Read kernel information using `tasklist` module
+   * `cat /proc/tasklist`
+
+> I've add `sudo insmod tasklist.ko` (and also `dmesg | tail`) in Makefile. Thus you can skip step 3 while it has done in step 2.
+
+### Step
+
+#### Task information
+
+First, We need to locate the information which we want.
+
+And I found:
+
+* [task_struct](https://github.com/torvalds/linux/blob/master/include/linux/sched.h#L585) (start from line 585)
+  * pid: `pid_t pid;` (line 739)
+  * state: `volatile long state;` (line 594)
+  * command: `char comm[TASK_COMM_LEN];` (line 840)
+
+So extend the original `my_seq_show` in [`ProcessInfoModule/tasklist.c`](ProcessInfoModule/tasklist.c#L39)
+
+(And I also add the title line in `my_seq_start`)
+
+#### Next task
+
+Figure out, how to iterate through the process `task_struct`
+
+> * [Shichao's Notes Ch3 Process Management - The Process Family Tree](https://notes.shichao.io/lkd/ch3/#the-process-family-tree)
+> * [Medium - Linux Kernel: Process](https://medium.com/hungys-blog/linux-kernel-process-99629d91423c)
+> * [GitHubGist - an example using `for_each_process`](https://gist.github.com/anryko/c8c8788ccf7d553a140a03aba22cab88)
+
+In [`include/linux/list.h` (line 489)](https://github.com/torvalds/linux/blob/master/include/linux/list.h#L489) define `list_for_each` macro
+
+```c
+/**
+ * list_for_each	-	iterate over a list
+ * @pos:	the &struct list_head to use as a loop cursor.
+ * @head:	the head for your list.
+ */
+#define list_for_each(pos, head) \
+	for (pos = (head)->next; pos != (head); pos = pos->next)
+```
+
+> But we want to forward one task each time
+
+In [`include/linux/sched/signal.h` (line 540)](https://github.com/torvalds/linux/blob/master/include/linux/sched/signal.h#L540) define `next_task` macro
+
+```c
+#define next_task(p) \
+	list_entry_rcu((p)->tasks.next, struct task_struct, tasks)
+```
+
+So extend the original `my_seq_next` in [`ProcessInfoModule/tasklist.c`](ProcessInfoModule/tasklist.c#L54)
+
+#### Compile and Result
+
+Then I've add `make remove` to remove the module.
+
+> You can't install the module with same name while the old one exist (loaded).
+
+![remove install](make.png)
+
+Here is the result of `cat /proc/tasklist`:
+
+![cat /proc/tasklist](proc_tasklist.png)
