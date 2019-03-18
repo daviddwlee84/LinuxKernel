@@ -10,6 +10,7 @@ Week 0|[Compile Linux 4.19.23 kernel on Ubuntu](Subject/Week0_CompileLinuxKernel
 Week 1|[Build Basic Linux Kernel](Subject/Week1_BuildBasicKernel/BuildBasicKernel.md)
 Lab 1|[Kernel Debug](Lab/Lab1_KernelDebug/KernelDebug.md)
 Week 3|[Linux Process](Subject/Week3_LinuxProcess)
+Lab 2|[Add Kernel Patch and Read Process Info Module](Lab/Lab2_KernelPatch_ProcessInfo/)
 
 ## Notes
 
