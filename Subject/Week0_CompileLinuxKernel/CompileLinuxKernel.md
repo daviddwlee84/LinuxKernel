@@ -4,6 +4,15 @@
 
 In this practice I'll use Ubuntu 18.04 running on VirtualBox.
 
+```txt
+$ lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 18.04.2 LTS
+Release:	18.04
+Codename:	bionic
+```
+
 ## Download Essential
 
 ### Linux Kernel Source Code
