@@ -13,6 +13,7 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 |  Lab 2 | [Add Kernel Patch and Read Process Info Module](Lab/Lab2_KernelPatch_ProcessInfo/)                    |
 | Week 5 | No homework ʕ•͡ᴥ•ʔ                                                                                    |
 | Week 6 | No homework maybe.. ʕ•͡ᴥ•ʔ ??                                                                         |
+| Week 7 | [Synchronization Mechanism - RCU](Subject/Week7_SynchronizationMechanism/SynchronizationMechanism.md) |
 |  Final | [Final Project: subject undefined](Subject/Final)                                                     |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)

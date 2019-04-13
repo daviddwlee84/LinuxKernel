@@ -287,6 +287,8 @@ static inline int __read_seqcount_retry(const seqcount_t *s, unsigned start)
 
 ## RCU
 
+> [Deeper exploration in week 7 homework](../Subject/Week7_SynchronizationMechanism/SynchronizationMechanism.md)
+
 | -          | Read | Write |
 | ---------- | ---- | ----- |
 | Read Lock  | TBD  | TBD   |
