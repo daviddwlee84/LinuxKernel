@@ -14,6 +14,7 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 | Week 5 | No homework ʕ•͡ᴥ•ʔ                                                                                    |
 | Week 6 | No homework maybe.. ʕ•͡ᴥ•ʔ ??                                                                         |
 | Week 7 | [Synchronization Mechanism - RCU](Subject/Week7_SynchronizationMechanism/SynchronizationMechanism.md) |
+| Week 8 | No homework (*￣▽￣)/‧☆*"`'*-.,_,.-*'`"*-.,_☆                                                           |
 |  Final | [Final Project: subject undefined](Subject/Final)                                                     |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)
@@ -27,7 +28,8 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 * [Linux Process](Notes/LinuxProcess.md)
 * [Linux Process Scheduling](Notes/LinuxProcessScheduling.md)
 * [Linux Kernel Synchronization](Notes/KernelSynchronization.md)
-* Linux System Call and Interrupt
+* [Linux Interrupt, Exception and System Call](Notes/KernelInterrupt.md) - Skip system call now
+* [Memory Management](Notes/MemoryManagement.md)
 
 ### Linux Programming
 
@@ -41,6 +43,7 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 
 * [PKU Course Website](http://59.56.74.25:4455/)
 * [Linux From Scratch](http://www.linuxfromscratch.org/)
+* [Supercharged Computing Notes - Category: Kernel](https://superchargedcomputing.com/category/kernel/)
 
 ### Book
 
