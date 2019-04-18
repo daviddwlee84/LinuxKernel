@@ -124,7 +124,7 @@ When reboot. Press *shift* we can select kernel.
 
 > It's in *Advanced options for Ubuntu* option.
 
-![grub](images/grub.png)
+![grub](grub.png)
 
 When login the system. Use `uname -a` we can check if our system version is 4.19.23 means success.
 
@@ -132,7 +132,7 @@ When login the system. Use `uname -a` we can check if our system version is 4.19
 >
 > But it somehow login successfully after few reboot...
 
-![uname](images/uname.png)
+![uname](uname.png)
 
 ## Afterword
 
