@@ -10,7 +10,7 @@ char buf[BUFSIZE];
 typedef struct data
 {
     unsigned long addr;
-    int p;
+    int pid;
 } mydata;
 
 int main()
@@ -20,15 +20,19 @@ int main()
     mydata wdata;
     tmp = 0x12345678;
     addr = &tmp;
-    //Output tmp?
-    //Output addr?
+    printf("tmp value is: %lX\n", tmp);
+    printf("tmp address is: %lX\n", addr);
     wdata.addr = addr;
-    wdata.p = getpid();
-    //Output Process ID pid?
-    //Open File
+    wdata.pid = getpid();
+    printf("the pid is: %d\n", wdata.pid);
     fd = open("/proc/logadd2phyadd", O_RDWR);
-    //Write wdata into file?
-    //Read file?
+    if (fd == -1)
+    {
+        printf("Fail to open file /proc/logadd2phyadd");
+        return 1;
+    }
+    write(fd, &wdata, sizeof(mydata));
+    len = read(fd, buf, BUFSIZE);
     //Output file length and content
     printf("the read length is %d and the buf content is: \n%s\n", len, buf);
 

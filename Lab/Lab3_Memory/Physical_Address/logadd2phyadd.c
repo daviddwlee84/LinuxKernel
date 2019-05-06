@@ -19,17 +19,21 @@ static char tmp[1024];
 
 static void get_pgtable_macro(struct seq_file *m)
 {
-
     seq_printf(m, "PAGE_OFFSET = 0x%lx\n", PAGE_OFFSET);
     seq_printf(m, "PGDIR_SHIFT = %d\n", PGDIR_SHIFT);
-    //Output Process P4D_SHIFT,PUD_SHIFT,PMD_SHIFT,PAGE_SHIFT?
-
+    seq_printf(m, "P4D_SHIFT = %d\n", P4D_SHIFT);
+    seq_printf(m, "PUD_SHIFT = %d\n", PUD_SHIFT);
+    seq_printf(m, "PMD_SHIFT = %d\n", PMD_SHIFT);
+    seq_printf(m, "PAGE_SHIFT = %d\n", PAGE_SHIFT);
     seq_printf(m, "PTRS_PER_PGD = %d\n", PTRS_PER_PGD);
-    //Output Process PTRS_PER_P4D,PTRS_PER_PUD,PTRS_PER_PMD,PTRS_PER_PTE?
-
+    seq_printf(m, "PTRS_PER_P4D = %d\n", PTRS_PER_P4D);
+    seq_printf(m, "PTRS_PER_PUD = %d\n", PTRS_PER_PUD);
+    seq_printf(m, "PTRS_PER_PMD = %d\n", PTRS_PER_PMD);
+    seq_printf(m, "PTRS_PER_PTE = %d\n", PTRS_PER_PTE);
     seq_printf(m, "PAGE_MASK = 0x%lx\n", PAGE_MASK);
 }
 
+// The most important function!
 static unsigned long vaddr2paddr(struct seq_file *m, unsigned long vaddr, int pid)
 {
     pte_t *pte_tmp = NULL;
@@ -191,6 +195,7 @@ static int __init my_init(void)
 {
     struct proc_dir_entry *my_proc_entry;
     printk("<1>\nInstalling \'%s\' module\n", modname);
+    // The following define what will the module do when the pseudo-file is been opened
     my_proc_entry = proc_create(modname, 0x0666, NULL, &my_proc);
     if (NULL == my_proc_entry)
     {
