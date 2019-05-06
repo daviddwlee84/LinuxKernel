@@ -14,7 +14,9 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 | Week 5 | No homework ʕ•͡ᴥ•ʔ                                                                                    |
 | Week 6 | No homework maybe.. ʕ•͡ᴥ•ʔ ??                                                                         |
 | Week 7 | [Synchronization Mechanism - RCU](Subject/Week7_SynchronizationMechanism/SynchronizationMechanism.md) |
-| Week 8 | No homework (*￣▽￣)/‧☆*"`'*-.,_,.-*'`"*-.,_☆                                                           |
+| Week 8 | No homework (*￣▽￣)/‧☆"'-.,_,.-'"-.,_☆                                                                 |
+| Week 9 | 5/1 Holiday                                                                                           |
+|  Lab 3 | [Observe Memory Mapping and Find Physical Address](Lab/Lab3_Memory)                                   |
 |  Final | [Final Project: subject undefined](Subject/Final)                                                     |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)
@@ -28,8 +30,8 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 * [Linux Process](Notes/LinuxProcess.md)
 * [Linux Process Scheduling](Notes/LinuxProcessScheduling.md)
 * [Linux Kernel Synchronization](Notes/KernelSynchronization.md)
-* [Linux Interrupt, Exception and System Call](Notes/KernelInterrupt.md) - Skip system call now
-* [Memory Management](Notes/MemoryManagement.md)
+* [Linux Interrupt, Exception and System Call](Notes/KernelInterrupt.md) - Skip system call now (TBD)
+* [Memory Management](Notes/MemoryManagement.md) (TBD)
 
 ### Linux Programming
 
