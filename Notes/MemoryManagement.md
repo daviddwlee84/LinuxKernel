@@ -297,3 +297,4 @@ Not yet
 * [Microprocessor system architectures – IA32 segmentation](https://www.slideserve.com/arty/microprocessor-system-architectures-ia32-segmentation)
 * [pdf - Intel’s View of Memory Management](https://web.cs.wpi.edu/~cs3013/c07/lectures/Section09.1-Intel.pdf)
 * [pdf - Memory Management: Paging](http://www.ic.unicamp.br/~celio/mc404-2013/arm-manuals/Paging%20Systems.pdf)
+  * [CSDN](https://blog.csdn.net/samssm/article/details/17396061)
