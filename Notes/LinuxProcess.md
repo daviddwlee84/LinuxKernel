@@ -376,6 +376,7 @@ Understanding Linux Kernel - Ch3 Process
 
 ### Article
 
+* [Supercharged Computing Notes - Linux Processes](https://superchargedcomputing.com/2018/03/03/linux-processes/)
 * [Linux進程管理(一)](http://gityuan.com/2017/07/30/linux-process/)
 * [Linux進程管理(二)--fork](http://gityuan.com/2017/08/05/linux-process-fork/)
 * [Linux ps command](https://www.computerhope.com/unix/ups.htm)
