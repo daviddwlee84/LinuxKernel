@@ -7,7 +7,7 @@ const short SegmentPin[TotalLED] = {21, 20, 16, 12, 25, 24, 23, 18}; // a, b, c,
 const short DigitPin[TotalDigits] = {22, 27, 17, 4};                 // digit 0-3
 
 // Number Table
-const short NumTable[10][PinUsed] = {{1, 1, 1, 1, 1, 1, 0},  // 0
+const short NumTable[11][PinUsed] = {{1, 1, 1, 1, 1, 1, 0},  // 0
                                      {0, 1, 1, 0, 0, 0, 0},  // 1
                                      {1, 1, 0, 1, 1, 0, 1},  // 2
                                      {1, 1, 1, 1, 0, 0, 1},  // 3
@@ -16,7 +16,10 @@ const short NumTable[10][PinUsed] = {{1, 1, 1, 1, 1, 1, 0},  // 0
                                      {1, 0, 1, 1, 1, 1, 1},  // 6
                                      {1, 1, 1, 0, 0, 0, 0},  // 7
                                      {1, 1, 1, 1, 1, 1, 1},  // 8
-                                     {1, 1, 1, 1, 0, 1, 1}}; // 9
+                                     {1, 1, 1, 1, 0, 1, 1},  // 9
+                                     {0, 0, 0, 0, 0, 0, 0}}; // Empty
+
+short NumToShow[TotalDigits] = {10, 10, 10, 10}; // unit, ten, hundred, thousand
 
 // Function
 void init_7seg_gpio()
@@ -53,9 +56,9 @@ void setDigit(int digit)
 
 void clearDisplay()
 {
-    for (int i = 0; i < DigitUsed; i++)
+    for (int pos = 0; pos < DigitUsed; pos++)
     {
-        GPIO_SET = 1 << DigitPin[i];
+        GPIO_SET = 1 << DigitPin[pos];
     }
 }
 
@@ -63,4 +66,43 @@ void showDigit(int pos)
 {
     clearDisplay();
     GPIO_CLR = 1 << DigitPin[pos];
+}
+
+void setNumberPad(int number) // Set the number to display (pad with zero)
+{
+    for (int pos = 0; pos < DigitUsed; pos++)
+    {
+        NumToShow[pos] = number % 10;
+        number /= 10;
+    }
+}
+
+void setNumber(int number, bool padZero)
+{
+    if (padZero)
+        setNumberPad(number);
+    else
+    {
+        for (int pos = 0; pos < DigitUsed; pos++)
+        {
+            NumToShow[pos] = number % 10;
+            number /= 10;
+            if (number == 0)
+                break;
+        }
+    }
+}
+
+void showAllDigits(double duration)
+{
+    duration *= 1000000;
+    for (int t = 0; t < duration; t += DISP_DELAY_US)
+    {
+        for (int pos = 0; pos < DigitUsed; pos++)
+        {
+            showDigit(pos);
+            setDigit(NumToShow[pos]);
+            usleep(DISP_DELAY_US);
+        }
+    }
 }
