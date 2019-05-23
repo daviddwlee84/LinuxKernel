@@ -1,4 +1,4 @@
-# Final Project
+# Final Project: Manipulating Raspberry Pi GPIO with Direct Register Access in Kernel Space
 
 ## Overview
 
@@ -90,11 +90,61 @@ $ sudo cat /proc/iomem
 3fc00000-3fc00fff : /soc/v3d@7ec00000
 ```
 
-## Data Structure
+## Linux Library
 
-## Algorithm
+* [`include/linux/module.h`](https://github.com/torvalds/linux/blob/master/include/linux/module.h)
 
-## Result
+### Linux Kernel Thread
+
+* [`include/linux/kthread.h`](https://github.com/torvalds/linux/blob/master/include/linux/kthread.h)
+
+* Playing with Systems Blog
+  * [Kernel Threads](https://sysplay.in/blog/linux-kernel-internals/2015/04/kernel-threads/)
+  * [Kernel Threads Continued](https://sysplay.in/blog/linux-kernel-internals/2015/05/kernel-threads-continued/)
+
+### Linux GPIO
+
+> But I decide to manipulate the BCM2835's registers by myself. Just take some notes.
+
+* [`include/linux/gpio.h`](https://github.com/torvalds/linux/blob/master/include/linux/gpio.h)
+
+    ```c
+    /*
+    * <linux/gpio.h>
+    *
+    * This is the LEGACY GPIO bulk include file, including legacy APIs. It is
+    * used for GPIO drivers still referencing the global GPIO numberspace,
+    * and should not be included in new code.
+    *
+    * If you're implementing a GPIO driver, only include <linux/gpio/driver.h>
+    * If you're implementing a GPIO consumer, only include <linux/gpio/consumer.h>
+    */
+    ```
+
+## Compiling Raspberry Kernel Module
+
+* [How compile a loadable kernel module without recompiling kernel](https://raspberrypi.stackexchange.com/questions/39845/how-compile-a-loadable-kernel-module-without-recompiling-kernel)
+
+Originally in the Raspbian image, you won't found the directory `/lib/modules/$(shell uname -r)/build`
+
+Just install with the following commands
+
+```sh
+# make sure the system is the latest
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+sudo rpi-update # not sure if this is necessary
+
+# Install the kernel headers
+sudo apt-get install raspberrypi-kernel-headers
+```
+
+After update, you'll found the directory under `/lib/modules` is upgraded (if you're previous system is not the latest). But calling the `uname -r` will still return the previous version. So just `sudo reboot`.
+
+Finally in this project, it will be using the `4.19.42-v7+` Raspberry Pi kernel.
+
+> Try with my [HelloWorld example](../Week1_BuildBasicKernel/HelloWorld) code to test the environment.
 
 ## Trouble Shooting
 
@@ -203,6 +253,7 @@ Connect the device: (Raspberry Pi default UART baud rate 115200)
 
 * [Raspberry Pi Documentation GPIO](https://www.raspberrypi.org/documentation/usage/gpio/)
 * [RPi Serial Connection](https://elinux.org/RPi_Serial_Connection)
+* [Raspberry Pi Linux Kernel](https://github.com/raspberrypi/linux)
 
 #### Pinout
 

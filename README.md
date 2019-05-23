@@ -17,7 +17,7 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 | Week 8 | No homework (*￣▽￣)/‧☆"'-.,_,.-'"-.,_☆                                                                 |
 | Week 9 | 5/1 Holiday                                                                                           |
 |  Lab 3 | [Observe Memory Mapping and Find Physical Address](Lab/Lab3_Memory)                                   |
-|  Final | [Final Project: subject undefined](Subject/Final)                                                     |
+|  Final | [Manipulating Raspberry Pi GPIO with Direct Register Access in Kernel Space](Subject/Final)           |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)
 
