@@ -9,6 +9,21 @@
 
 ![Common cathode 4-digit 7-seg pinouts](https://raspi.tv/wp-content/uploads/2015/11/7seg-pinout-annotated_700.jpg)
 
+![single 7-seg pinout](https://potentiallabs.com/cart/image/cache/catalog/Oct-2018%20components/7_seg_pin_config-300x266-800x800.gif)
+
+|  Num | a   | b   | c   | d   | e   | f   | g   |
+| ---: | --- | --- | --- | --- | --- | --- | --- |
+|    0 | 1   | 1   | 1   | 1   | 1   | 1   | 0   |
+|    1 | 0   | 1   | 1   | 0   | 0   | 0   | 0   |
+|    2 | 1   | 1   | 0   | 1   | 1   | 0   | 1   |
+|    3 | 1   | 1   | 1   | 1   | 0   | 0   | 1   |
+|    4 | 0   | 1   | 1   | 0   | 0   | 1   | 1   |
+|    5 | 1   | 0   | 1   | 1   | 0   | 1   | 1   |
+|    6 | 1   | 0   | 1   | 1   | 1   | 1   | 1   |
+|    7 | 1   | 1   | 1   | 0   | 0   | 0   | 0   |
+|    8 | 1   | 1   | 1   | 1   | 1   | 1   | 1   |
+|    9 | 1   | 1   | 1   | 1   | 0   | 1   | 1   |
+
 ### GPIO Registers of Raspberry Pi
 
 * [**Low Level Programming of the Raspberry Pi in C**](https://www.pieter-jan.com/node/15)
@@ -19,7 +34,7 @@
 * [Memory Mapped GPIO](http://merkles.com/Using_GPIOs/Memory_Mapped_GPIO.html)
 * [**Raspberry Pi And The IoT In C - Memory Mapped GPIO**](https://www.iot-programmer.com/index.php/books/22-raspberry-pi-and-the-iot-in-c/chapters-raspberry-pi-and-the-iot-in-c/59-raspberry-pi-and-the-iot-in-c-memory-mapped-gpio)
 
-#### BCM2835
+#### BCM2835 (THIS IS OLD CHIP)
 
 > * [bcm2835 datasheet](https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf)
 >   * [BCM2835 datasheet errata](https://elinux.org/BCM2835_datasheet_errata)
@@ -31,7 +46,7 @@
   * 1.2.2 ARM virtual addresses (standard Linux kernel only)
     * Addressing: virtual address -> physical address -> bus address
   * 1.2.3 ARM physical addresses
-    * Physical address: 0x20000000 ~ 0x20FFFFFF
+    * Physical address: 0x3F000000 ~ 0x3FFFFFFF
   * 1.2.4 Bus addresses
     * Bus address: 0x7E000000 ~
 * 6.1 Register view
@@ -49,7 +64,76 @@
       * 011 = GPIO Pin takes alternate function 4
       * 010 = GPIO Pin takes alternate function 5
 
-BCM2835 Pin to Phisical Pin
+This is mentioned in the [wiringPi library source code](https://github.com/WiringPi/WiringPi/blob/master/wiringPi/wiringPi.c#L97)
+
+```c
+// The BCM2835 has 54 GPIO pins.
+//	BCM2835 data sheet, Page 90 onwards.
+//	There are 6 control registers, each control the functions of a block
+//	of 10 pins.
+//	Each control register has 10 sets of 3 bits per GPIO pin - the ALT values
+//
+//	000 = GPIO Pin X is an input
+//	001 = GPIO Pin X is an output
+//	100 = GPIO Pin X takes alternate function 0
+//	101 = GPIO Pin X takes alternate function 1
+//	110 = GPIO Pin X takes alternate function 2
+//	111 = GPIO Pin X takes alternate function 3
+//	011 = GPIO Pin X takes alternate function 4
+//	010 = GPIO Pin X takes alternate function 5
+//
+// So the 3 bits for port X are:
+//	X / 10 + ((X % 10) * 3)
+
+// Port function select bits
+
+#define	FSEL_INPT		0b000
+#define	FSEL_OUTP		0b001
+#define	FSEL_ALT0		0b100
+#define	FSEL_ALT1		0b101
+#define	FSEL_ALT2		0b110
+#define	FSEL_ALT3		0b111
+#define	FSEL_ALT4		0b011
+#define	FSEL_ALT5		0b010
+```
+
+#### BCM2837
+
+> * [bcm2837 datasheet](https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf)
+
+THE IMPORTANT THING:
+
+In the prevous notes and the related tutorial shows the GPIO peripheral base is 0x2000000.
+But this is the value for old chip. (for Model A, Model AP, ALpha, Zero)
+
+The new one is 0x3F000000. More detail can be found at wiringPi's source code [here](https://github.com/WiringPi/WiringPi/blob/master/wiringPi/wiringPi.c#L216) and [here](https://github.com/WiringPi/WiringPi/blob/master/wiringPi/wiringPi.c#L2260)
+
+```c
+#define	GPIO_PERI_BASE_OLD	0x20000000
+#define	GPIO_PERI_BASE_NEW	0x3F000000
+
+...
+
+int wiringPiSetup (void)
+{
+  ...
+  switch (model)
+  {
+    case PI_MODEL_A:	case PI_MODEL_B:
+    case PI_MODEL_AP:	case PI_MODEL_BP:
+    case PI_ALPHA:	case PI_MODEL_CM:
+    case PI_MODEL_ZERO:	case PI_MODEL_ZERO_W:
+      piGpioBase = GPIO_PERI_BASE_OLD ;
+      break ;
+
+    default:
+      piGpioBase = GPIO_PERI_BASE_NEW ;
+      break ;
+  }
+
+  ...
+}
+```
 
 ### Raspberry Pi Memory
 
@@ -146,6 +230,10 @@ Finally in this project, it will be using the `4.19.42-v7+` Raspberry Pi kernel.
 
 > Try with my [HelloWorld example](../Week1_BuildBasicKernel/HelloWorld) code to test the environment.
 
+## Advanced Kernel Module Compile notes
+
+* [Stackoverflow - What is the purpose of .PHONY in a makefile?](https://stackoverflow.com/questions/2145590/what-is-the-purpose-of-phony-in-a-makefile)
+
 ## Trouble Shooting
 
 ### ttyUSB0 not found (PL2303TA USB to TTL)
@@ -240,6 +328,15 @@ Connect the device: (Raspberry Pi default UART baud rate 115200)
 * [How Many Inputs? (GPIO/I₂C)](https://www.raspberrypi.org/forums/viewtopic.php?t=161950)
   * There are 28 GPIO routed to pins on the expansion header. 2 GPIO are reserved for system use. The remaining pins are connected to the 5V, 3V3, and ground rails.
 * [RPi Low-level peripherals](https://elinux.org/RPi_Low-level_peripherals)
+* [Raspberry Pi hardware document](https://www.raspberrypi.org/documentation/hardware/raspberrypi/)
+  * BCM2835: The Broadcom processor used in Raspberry Pi 1 and Zero
+  * **BCM2837**: The Broadcom processor used in Raspberry Pi 3 (and later Raspberry Pi 2) => In this project
+  * BCM2837B0: The Broadcom processor used in Raspberry Pi 3B+ and 3A+
+
+Kernel Module
+
+* [2.2. Compiling Kernel Modules](https://www.tldp.org/LDP/lkmpg/2.6/html/x181.html)
+* [garyachy/Makefile](https://gist.github.com/garyachy/1dc7fcb52bde291cece426f4e49b52de) - Linux kernel module makefile
 
 ### Raspberry Pi Kernel Project
 
