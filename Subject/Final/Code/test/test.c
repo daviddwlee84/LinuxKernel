@@ -43,8 +43,33 @@ int gpioBlinkTest()
     }
 }
 
+void single7segTest()
+{
+    if (map_peripheral(&g_gpio) == -1)
+    {
+        printf("Failed to map the physical GPIO registers into the virtual memory space. \n");
+        return;
+    }
+    printf("Initializing GPIO\n");
+    init_7seg_gpio();
+    for (int pos = 0; pos < DigitUsed; pos++)
+    {
+        showDigit(pos);
+        printf("Showing the digit on position %d\n", pos);
+        for (int num = 0; num < 10; num++)
+        {
+            setDigit(num);
+            printf("Showing digit %d\n", num);
+            usleep(250 * 1000);
+        }
+        clearNumber();
+    }
+}
+
 int main()
 {
     testNumTable();
-    return gpioBlinkTest();
+    single7segTest();
+    // blink on GPIO 4
+    // return gpioBlinkTest();
 }

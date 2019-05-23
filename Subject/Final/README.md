@@ -24,6 +24,59 @@
 |    8 | 1   | 1   | 1   | 1   | 1   | 1   | 1   |
 |    9 | 1   | 1   | 1   | 1   | 0   | 1   | 1   |
 
+```txt
+ +-----+-----+---------+------+---+---Pi 3B--+---+------+---------+-----+-----+
+ | BCM | LED |   Name  | Mode | V | Physical | V | Mode | Name    | LED | BCM |
+ +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+
+ |     |     |    3.3v |      |   |  1 || 2  |   |      | 5v      |     |     |
+ |   2 |     |   SDA.1 |   IN | 1 |  3 || 4  |   |      | 5v      |     |     |
+ |   3 |     |   SCL.1 |   IN | 1 |  5 || 6  |   |      | 0v      |     |     |
+ |   4 |  D3 | GPIO. 7 |  OUT | 0 |  7 || 8  | 1 | ALT5 | TxD     |     | 14  |
+ |     |     |      0v |      |   |  9 || 10 | 1 | ALT5 | RxD     |     | 15  |
+ |  17 |  D2 | GPIO. 0 |  OUT | 0 | 11 || 12 | 0 | OUT  | GPIO. 1 | dp  | 18  |
+ |  27 |  D1 | GPIO. 2 |  OUT | 0 | 13 || 14 |   |      | 0v      |     |     |
+ |  22 |  D0 | GPIO. 3 |  OUT | 0 | 15 || 16 | 0 | OUT  | GPIO. 4 | G   | 23  |
+ |     |     |    3.3v |      |   | 17 || 18 | 0 | OUT  | GPIO. 5 | F   | 24  |
+ |  10 |     |    MOSI |   IN | 0 | 19 || 20 |   |      | 0v      |     |     |
+ |   9 |     |    MISO |   IN | 0 | 21 || 22 | 0 | OUT  | GPIO. 6 | E   | 25  |
+ |  11 |     |    SCLK |   IN | 0 | 23 || 24 | 1 | IN   | CE0     |     | 8   |
+ |     |     |      0v |      |   | 25 || 26 | 1 | IN   | CE1     |     | 7   |
+ |   0 |     |   SDA.0 |   IN | 1 | 27 || 28 | 1 | IN   | SCL.0   |     | 1   |
+ |   5 |     | GPIO.21 |   IN | 1 | 29 || 30 |   |      | 0v      |     |     |
+ |   6 |     | GPIO.22 |   IN | 1 | 31 || 32 | 0 | OUT  | GPIO.26 | D   | 12  |
+ |  13 |     | GPIO.23 |   IN | 0 | 33 || 34 |   |      | 0v      |     |     |
+ |  19 |     | GPIO.24 |   IN | 0 | 35 || 36 | 0 | OUT  | GPIO.27 | C   | 16  |
+ |  26 |     | GPIO.25 |   IN | 0 | 37 || 38 | 0 | OUT  | GPIO.28 | B   | 20  |
+ |     |     |      0v |      |   | 39 || 40 | 0 | OUT  | GPIO.29 | A   | 21  |
+ +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+
+ | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
+ +-----+-----+---------+------+---+---Pi 3B--+---+------+---------+-----+-----+
+```
+
+```txt
+ D2  G  F  A  B
++---------------+
+|10  9  8  7  6 |
+|    Front      |
+| 1  2  3  4  5 |
++---------------+
+  D  .  E  C  D1
+```
+
+#### 5261AS(Common Cathode) (NOT THIS)
+
+![data sheet](https://ae01.alicdn.com/kf/HTB1reJnLpXXXXcpXFXXq6xXFXXXq/226185323/HTB1reJnLpXXXXcpXFXXq6xXFXXXq.jpg?size=143423&height=978&width=750&hash=ce02d8abad7147994cc9f926f4c934b8)
+
+#### MCD5621Cx (NOT THIS)
+
+> WITHOUT PIN 6, 8 WTF
+
+* [MCD-5621Cx-Dx (DUAL DIGIT LED DISPLAY) Datasheet](http://mcdelectronics.com/userfiles/1185/files/LED%20Displays/dual_digit_7_segment_display_GND-5621Cx-Dx.pdf)
+
+> NOT THIS EITHER
+>
+> ![double digits 7-seg display](https://4.bp.blogspot.com/-3f68Z3dIqXs/W5DE_lgCtdI/AAAAAAABLCU/nmxqESNPzioWSIH0euQE_UiuSSt5lclSQCLcBGAs/s1600/7Segment-Pinout.jpg)
+
 ### GPIO Registers of Raspberry Pi
 
 * [**Low Level Programming of the Raspberry Pi in C**](https://www.pieter-jan.com/node/15)
@@ -233,6 +286,7 @@ Finally in this project, it will be using the `4.19.42-v7+` Raspberry Pi kernel.
 ## Advanced Kernel Module Compile notes
 
 * [Stackoverflow - What is the purpose of .PHONY in a makefile?](https://stackoverflow.com/questions/2145590/what-is-the-purpose-of-phony-in-a-makefile)
+* [What is the difference between the GNU Makefile variable assignments =, ?=, := and +=?](https://stackoverflow.com/questions/448910/what-is-the-difference-between-the-gnu-makefile-variable-assignments-a?rq=1)
 
 ## Trouble Shooting
 
@@ -332,6 +386,7 @@ Connect the device: (Raspberry Pi default UART baud rate 115200)
   * BCM2835: The Broadcom processor used in Raspberry Pi 1 and Zero
   * **BCM2837**: The Broadcom processor used in Raspberry Pi 3 (and later Raspberry Pi 2) => In this project
   * BCM2837B0: The Broadcom processor used in Raspberry Pi 3B+ and 3A+
+    * [Raspberry Pi Compute Module 3+ Datasheet](https://www.raspberrypi.org/documentation/hardware/computemodule/datasheets/rpi_DATA_CM3plus_1p0.pdf)
 
 Kernel Module
 
