@@ -19,7 +19,7 @@
 
 #define BLOCK_SIZE (4 * 1024)
 
-// I/O Acces
+// I/O Access
 struct bcm2837_peripheral
 {
     unsigned long addr_p;        // pointer to memory address
