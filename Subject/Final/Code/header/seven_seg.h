@@ -18,10 +18,10 @@ extern const short DigitPin[TotalDigits]; // digit 0~3
 extern const short NumTable[10 + 1][PinUsed]; // from 0 to 9 + a None
 
 // Basic Function
-void init_7seg_gpio();    // Initialize the GPIOs used by 7-seg display
-void setDigit(int digit); // Set the digit to display
-void showDigit(int pos);  // Power the digit position to show
-void clearNumber();       // Clean the digits
+void init_7seg_gpio(void); // Initialize the GPIOs used by 7-seg display
+void setDigit(int digit);  // Set the digit to display
+void showDigit(int pos);   // Power the digit position to show
+void clearNumber(void);    // Clean the digits
 
 // Higher Level Funct
 void setNumberPad(int number);            // Set the number to display (pad with zero)

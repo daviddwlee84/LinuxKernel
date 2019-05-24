@@ -22,7 +22,7 @@ const short NumTable[11][PinUsed] = {{1, 1, 1, 1, 1, 1, 0},  // 0
 short NumToShow[TotalDigits] = {10, 10, 10, 10}; // unit, ten, hundred, thousand
 
 // Function
-void init_7seg_gpio()
+void init_7seg_gpio(void)
 {
     int i;
     for (i = 0; i < PinUsed; i++)
@@ -37,7 +37,7 @@ void init_7seg_gpio()
     }
 }
 
-void clearNumber()
+void clearNumber(void)
 {
     for (int i = 0; i < PinUsed; i++)
     {
@@ -54,7 +54,7 @@ void setDigit(int digit)
     }
 }
 
-void clearDisplay()
+void clearDisplay(void)
 {
     for (int pos = 0; pos < DigitUsed; pos++)
     {
