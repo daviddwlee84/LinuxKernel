@@ -17,9 +17,39 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 | Week 8 | No homework (*￣▽￣)/‧☆"'-.,_,.-'"-.,_☆                                                                 |
 | Week 9 | 5/1 Holiday                                                                                           |
 |  Lab 3 | [Observe Memory Mapping and Find Physical Address](Lab/Lab3_Memory)                                   |
-|  Final | [Manipulating Raspberry Pi GPIO with Direct Register Access in Kernel Space](Subject/Final)           |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)
+
+## Final Project: Manipulating Raspberry Pi GPIO in Kernel Space with 7-segment Display
+
+> And also Direct Register Access in user space
+
+* [Top Directory](Subject/Final)
+  * [Experiment](Subject/Final/Experiment.md)
+    * [for environment detail](Subject/Final/Experiment.md#Experiment-Envirounmant)
+    * [for environment setting](Subject/Final/Experiment.md#Experiment-Steps)
+  * [Analysis](Subject/Final/Analysis.md)
+
+```sh
+# Quick start on Raspberry Pi (make sure you've set up the environment as mine)
+# Copy the file to the home dir of raspberry pi (you can replace raspberrypi.local with the IP address)
+scp -r Subject/Final pi@raspberrypi.local:~/KernelGPIO
+# connect to raspberry pi
+ssh pi@raspberrypi.local
+
+# compile and install the rpi_7seg module
+cd KernelGPIO/Code_KernelDelayThread_UseGPIO_H
+./smart_install.sh
+
+# play a dice!
+cd ../TestScriptsForKernelSysfs
+./dice.py 6
+```
+
+TODO
+
+* [ ] Demo GIF
+* [ ] Peresentation Slides
 
 ## Notes
 
@@ -63,7 +93,9 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 
 #### E-Book
 
+* [**Introduction to Computer Organization: ARM Assembly Language Using the Raspberry Pi**](https://bob.cs.sonoma.edu/IntroCompOrg-RPi/intro-co-rpi.html)
 * [**linux-insides**](https://0xax.gitbooks.io/linux-insides/content/index.html) - A book-in-progress about the linux kernel and its insides
   * [github](https://github.com/0xAX/linux-insides)
   * [chinese - Linux 内核揭秘](https://xinqiu.gitbooks.io/linux-insides-cn/content/index.html)
     * [github](https://github.com/MintCN/linux-insides-zh)
+* [The Linux Kernel documentation](https://www.kernel.org/doc/html/latest/index.html)
