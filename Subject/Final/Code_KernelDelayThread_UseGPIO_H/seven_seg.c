@@ -86,16 +86,20 @@ void setNumber(int number)
     int pos;
     if (number < 0)
     {
-        // if receive negative number, then clear the display.
+        // If receive negative number, then clear the display.
         clearDisplay();
         return;
     }
     for (pos = 0; pos < DigitUsed; pos++)
     {
-        NumToShow[pos] = number % 10;
-        number /= 10;
-        if (number == 0)
-            break;
+        // If the number position greater than 10 is 0 then don't display it!
+        if (number == 0 && pos > 0)
+            NumToShow[pos] = 10;
+        else
+        {
+            NumToShow[pos] = number % 10;
+            number /= 10;
+        }
     }
 }
 

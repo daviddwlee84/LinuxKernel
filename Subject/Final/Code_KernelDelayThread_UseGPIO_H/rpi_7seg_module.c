@@ -6,7 +6,9 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David D.W.Lee");
 MODULE_DESCRIPTION("Raspberry Pi GPIO control for 7-segment display Using Delay running in a kernel Thread");
-MODULE_VERSION("1.0");
+MODULE_VERSION("1.1");
+// 1.0: Fully functional version
+// 1.1: Give the pseudo-file /sys/rpi_7seg/display write permission to user and improve display function
 
 /* GPIO */
 
@@ -40,7 +42,11 @@ static ssize_t set_7seg(struct kobject *kobj, struct kobj_attribute *attr, const
     return count;
 }
 
-static struct kobj_attribute rpi_7seg_attribute = __ATTR(PSEUDO_FILENAME, (S_IWUSR | S_IRUGO), NULL, set_7seg);
+/* warning! need write-all permission so overriding check */
+#undef VERIFY_OCTAL_PERMISSIONS
+#define VERIFY_OCTAL_PERMISSIONS(perms) (perms)
+#define PERMISSION (S_IWUSR | S_IRUGO | S_IWGRP | S_IWOTH) // (S_IWUSR | S_IRUGO) means file mode 0644
+static struct kobj_attribute rpi_7seg_attribute = __ATTR(PSEUDO_FILENAME, PERMISSION, NULL, set_7seg);
 
 void rpi_7seg_sysfs_init(void)
 {
