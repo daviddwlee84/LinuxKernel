@@ -20,7 +20,7 @@ extern void init_7seg_gpio(void); // Initialize the GPIOs used by 7-seg display
 extern void free_7seg_gpio(void); // Free the GPIOs used by 7-seg display
 extern void clearDisplay(void);   // Set the digits to "not display"
 
-// Higher Level Funct
+// Higher Level Function
 extern void setNumber(int number);                // Set the number to display
 extern void showAllDigits(unsigned int duration); // Show a number for a duration (usec)
 

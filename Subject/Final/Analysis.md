@@ -32,7 +32,7 @@ The kernel include is put in `include/linux/`. So the include should be like `#i
 | `int kthread_stop(struct task_struct *k);`          | Stop a running thread                                 | 56           |
 | `bool kthread_should_stop(void);`                   | For some reason that check if it need to stop running | 57           |
 
-[`include/linux/sched.h)`](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/include/linux/sched.h)
+[`include/linux/sched.h`](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/include/linux/sched.h)
 
 | Function / Data Struct                                                                 | Detail                                        | Line in code |
 | -------------------------------------------------------------------------------------- | --------------------------------------------- | ------------ |
@@ -69,7 +69,7 @@ struct sched_param
 | Function / Data Struct / Macro                                                                          | Detail                                              | Line in code |
 | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------ |
 | `extern struct kobject * __must_check kobject_create_and_add(const char *name, struct kobject *parent)` | Create a directory under `/sys`                     | 106          |
-| `extern void kobject_put(struct kobject *kobj)`                                                         | Remove a directory from the sysfs                   |
+| `extern void kobject_put(struct kobject *kobj)`                                                         | Remove a directory from the sysfs                   | 115          |
 | `struct kobj_attribute`                                                                                 | Structure to store some attribute of the pseudofile | 163          |
 
 [`include/linux/sysfs.h`](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/include/linux/sysfs.h)
