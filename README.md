@@ -46,9 +46,12 @@ cd ../TestScriptsForKernelSysfs
 ./dice.py 6
 ```
 
+![compile demo](Subject/Final/figure/compile.gif)
+
+![dice demo](Subject/Final/figure/dice.gif)
+
 TODO
 
-* [ ] Demo GIF
 * [ ] Peresentation Slides
 
 ## Notes
