@@ -24,11 +24,12 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 
 > And also Direct Register Access in user space
 
-* [Top Directory](Subject/Final)
+* [Project Directory](Subject/Final)
   * [Experiment](Subject/Final/Experiment.md)
     * [for environment detail](Subject/Final/Experiment.md#Experiment-Envirounmant)
     * [for environment setting](Subject/Final/Experiment.md#Experiment-Steps)
   * [Analysis](Subject/Final/Analysis.md)
+  * [slides](Subject/Final/slides)
 
 ```sh
 # Quick start on Raspberry Pi (make sure you've set up the environment as mine)
@@ -49,10 +50,6 @@ cd ../TestScriptsForKernelSysfs
 ![compile demo](Subject/Final/figure/compile.gif)
 
 ![dice demo](Subject/Final/figure/dice.gif)
-
-TODO
-
-* [ ] Peresentation Slides
 
 ## Notes
 
