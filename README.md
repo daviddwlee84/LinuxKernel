@@ -17,6 +17,7 @@ Linux Kernel Programming and Driver Design. PKU course notes and example.
 | Week 8 | No homework (*￣▽￣)/‧☆"'-.,_,.-'"-.,_☆                                                                 |
 | Week 9 | 5/1 Holiday                                                                                           |
 |  Lab 3 | [Observe Memory Mapping and Find Physical Address](Lab/Lab3_Memory)                                   |
+|  Lab 4 | [Docker Container and Resource Limitation](Lab/Lab4_Docker) (TODO: exercise 2 and notes)              |
 
 * [Experiment Collection](Notes/ExperimentCollection.md)
 
