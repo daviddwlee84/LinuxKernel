@@ -266,9 +266,9 @@ $ sudo cat /proc/iomem
   * [Kernel Threads](https://sysplay.in/blog/linux-kernel-internals/2015/04/kernel-threads/)
   * [Kernel Threads Continued](https://sysplay.in/blog/linux-kernel-internals/2015/05/kernel-threads-continued/)
 
-### Linux GPIO (we don't use this. instead use direct register access)
+### Linux GPIO ~~(we don't use this. instead use direct register access)~~
 
-> But I decide to manipulate the BCM2835's registers by myself. Just take some notes.
+> ~~But I decide to manipulate the BCM2835's registers by myself. Just take some notes.~~
 
 * [`include/linux/gpio.h`](https://github.com/torvalds/linux/blob/master/include/linux/gpio.h)
 
@@ -285,11 +285,32 @@ $ sudo cat /proc/iomem
     */
     ```
 
+* [**Linux PSP GPIO Driver Guide**](http://processors.wiki.ti.com/index.php/Linux_PSP_GPIO_Driver_Guide#Useful_docs)
+* [The Linux driver implementer’s API guide - General Purpose Input/Output (GPIO)](https://www.kernel.org/doc/html/v4.17/driver-api/gpio/index.html)
+* [Documentation/gpio.txt](https://www.mjmwired.net/kernel/Documentation/gpio.txt)
+* [Linux GPIO Driver Guide](https://shyuanliang.blogspot.com/2012/08/linux-gpio-driver-guide.html)
+
 ### Linux Kernel Sysfs
 
 * [sysfs.txt](https://www.kernel.org/doc/Documentation/filesystems/sysfs.txt)
   * sysfs - _The_ filesystem for exporting kernel objects.
   * A `struct kobject` represents a kernel object, maybe a device or so, such as the things that show up as directory in the `sysfs` filesystem
+
+* [**The Kernel Kobject device model explained**](https://medium.com/@nayangadre/the-kernel-kobject-device-model-explained-89d02350fa03)
+* [**The zen of kobjects**](https://lwn.net/Articles/51437/)
+* [14.1. Kobjects, Ksets, and Subsystems](http://www.makelinux.net/ldd3/chp-14-sect-1.shtml)
+* [**總算有點了解 sysfs 了**](http://blog.linux.org.tw/~asho/archives/001816.html)
+* [Linux設備模型(2)_Kobject](http://www.wowotech.net/device_model/kobject.html)
+
+#### Kobject
+
+* [Documentation/kobject.txt](https://github.com/torvalds/linux/blob/master/Documentation/kobject.txt)
+
+#### Kset
+
+![A simple kset hierarchy](http://www.makelinux.net/ldd3/images/0596005903/figs/ldr3_1402.gif)
+
+#### Kattribute
 
 ## Compiling Raspberry Kernel Module
 

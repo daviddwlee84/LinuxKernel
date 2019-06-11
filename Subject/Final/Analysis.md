@@ -4,9 +4,9 @@
 > * data structure
 > * source code analysis
 
-## Raspberry Pi Linux Kernel
+## Linux Kernel API
 
-The Raspberry Pi Linux Kernel is a little different from the Torvalds Linux Kernel.
+> The Raspberry Pi Linux Kernel is a little different from the Torvalds Linux Kernel.
 
 The kernel include is put in `include/linux/`. So the include should be like `#include <linux/header.h>`.
 (if you're using a header that is not start with `linux`, you should check if you mis-use the "user space" header)
@@ -74,9 +74,10 @@ struct sched_param
 
 [`include/linux/sysfs.h`](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/include/linux/sysfs.h)
 
-| Macro                                         | Detail                        | Line in code |
-| --------------------------------------------- | ----------------------------- | ------------ |
-| `#define __ATTR(_name, _mode, _show, _store)` | Set a `struct kobj_attribute` | 101          |
+| Macro                                                                                                  | Detail                                                                           | Line in code |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ------------ |
+| `#define __ATTR(_name, _mode, _show, _store)`                                                          | Set a `struct kobj_attribute`                                                    | 101          |
+| `static inline int __must_check sysfs_create_file(struct kobject *kobj, const struct attribute *attr)` | Create a attribute in a kobject (i.e. create a pseudo-file in a sysfs directory) | 510          |
 
 ```c
 #define __ATTR(_name, _mode, _show, _store) {				\
@@ -102,7 +103,135 @@ struct sched_param
 | `#define S_IWOTH 00002`                     | Write permission by others                | 41           |
 | `#define S_IRUGO (S_IRUSR|S_IRGRP|S_IROTH)` | Give everyone read permission (i.e. 0444) | 11           |
 
+## More Detail About The Sysfs
+
+> sysfs is a virtual filesystem
+
+* [fs/sysfs](https://github.com/raspberrypi/linux/tree/rpi-4.19.y/fs/sysfs)
+
+### Overview of Kobject, Ktype, Kset
+
+* **kobject** - *The Directory*
+  * an object of type `struct kobject`
+  * attributes
+    * **name** - *The Pseudo-file*
+    * [**reference count**](#reference-counts)
+    * parent pointer
+    * specific type
+    * representation in the sysfs
+* **ktype** - *What to do when interactive with the Pseudo-file*
+  * a type associated with a kobject
+  * ktype controls
+    * what happens when a kobject is no longer referenced
+    * the kobject's default representation in sysfs
+* **kset**
+  * a group of kobjects (a collection of identical kobjects)
+    * all of which are embedded in structures of the same type
+  * basic container type for collections of kobjects
+  * contain their own kobjects
+  * a kobject's parent is usually the kset that contains it
+* **subsystem**
+  * a collection of ksets
+  * normally correspond to the top-level directories in sysfs
+
+### Kobject
+
+#### Initialization of kobjects
+
+* `void kobject_init(struct kobject *kobj)`
+  * sets the kobject's reference count to one
+  * kobject user must at least set the **name** of the kobject (this is the name that will be used in sysfs entries)
+  * and setup some of the internal fields
+
+#### Reference counts
+
+The low-level functions for manipulating a kobject's reference counts are:
+
+* `struct kobject *kobject_get(struct kobject *kobj)`: this will increment the kobject's reference counter and return the pointer to the kobject
+* `void kobject_put(struct kobject *kobj)`: this will decrement the reference count and, possibly, *free the object*
+
+If reference count reaches zero:
+
+* a structure protected by a kobject cannot be freed before its reference count goes to zero
+* a kobject is release a kobject's release() method (user defined)
+* every kobject must have a release() method, and the kobject must persist (in a consistent state) until that method is called
+* release() method is not stored in the kobject itself (it is associated with the [ktype](#ktypes))
+
+#### Hooking into sysfs
+
+* To create kobject as sysfs entry: `int kobject_add(struct kobject *kobj)`
+* To remove the kobject from sysfs: `void kobject_del(struct kobject *kobj)`
+* `kobject_register()` = `kobject_init()` + `kobject_add()`
+* `kobject_unregister()` = `kobject_del()` + `kobject_put()`
+
+### Ktypes
+
+> Store some additional attributes for kobject
+
+```c
+struct kobj_type {
+    void (*release)(struct kobject *);
+    struct sysfs_ops *sysfs_ops;
+    struct attribute **default_attrs;
+};
+```
+
+* the release() method is mentioned in [reference counts](#reference-counts) that if the reference count reachs zero then it should be called to free the kobject
+
+### Ksets
+
+> a kset looks like an extension of the `kobj_type` structure
+>
+> * `struct kobj_type` concerns itself with the *type* of an object
+> * `struct kset` is concerned with aggregation and collection
+
+A kset serves these functions:
+
+* serves as a bag containing a group of identical objects
+  * can be used by the kernel to track "all block devices" or "all PCI device drivers."
+* the directory-level glue that holds the device model (and sysfs) together
+  * every kset contains a kobject which can be set up to be the parent of other kobjects
+* support the "hotplugging" of kobjects
+
+![kset](https://static.lwn.net/images/ns/kset-sm.png)
+
+> "kset" is the top-level container class; ksets inherit their own kobject, and can be treated as a kobject as well.
+>
+> Thus kset has almost the same API with kobject, like
+>
+> * `void kset_init(struct kset *kset)`
+> * `int kset_add(struct kset *kset)`
+> * `int kset_register(struct kset *kset)`
+> * `void kset_unregister(struct kset *kset)`
+> * `struct kset *kset_get(struct kset *kset)`
+> * `void kset_put(struct kset *kset)`
+
+### Subsystems
+
+> A subsystem is a representation for a high-level portion of the kernel as a whole
+
+```c
+struct subsystem {
+    struct kset kset;
+    struct rw_semaphore rwsem;
+};
+```
+
+* just a wrapper around a kset (can contain multiple ksets, that ksets link each other with internal linked list)
+
+### Kobject in Action
+
+#### Creating "simple" kobjects
+
+* To create a simple directory in the sysfs hierarchy: `struct kobject *kobject_create_and_add(char *name, struct kobject *parent)`
+  * This function will create a kobject and place it in sysfs in the location underneath the specified parent kobject
+* To create simple attributes associated with this kobject: `int sysfs_create_file(struct kobject *kobj, struct attribute *attr)` or `int sysfs_create_group(struct kobject *kobj, struct attribute_group *grp)`
+
+> The example module: [samples/kobject/kobject-example.c](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/samples/kobject/kobject-example.c), [samples/kobject/kset-example.c](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/samples/kobject/kset-example.c)
+
 ## Source Code Analysis
+
+> Analysis of my code
 
 ### 7 Segment Display Helper Functions
 
@@ -302,7 +431,7 @@ Note that we need to undefine the `VERIFY_OCTAL_PERMISSIONS`, or the compiler wo
 static struct kobj_attribute rpi_7seg_attribute = __ATTR(PSEUDO_FILENAME, PERMISSION, NULL, set_7seg);
 ```
 
-Create the kobject under the `/sys/rpi_7seg` and called `display`
+Create the kobject under the `/sys/rpi_7seg` (using `kobject_create_and_add()`) and called `display` (using `sysfs_create_file()`)
 
 ```c
 #define PSEUDO_FILENAME display
@@ -529,6 +658,14 @@ For other test scripts
 
 * [`EightySeven.sh`](TestScriptsForKernelSysfs/EightySeven.sh)
 * [`random.sh`](TestScriptsForKernelSysfs/random.sh)
+
+--
+
+## Reference
+
+* [The zen of kobjects](https://lwn.net/Articles/51437/)
+* [Documentation/kobject.txt](https://github.com/raspberrypi/linux/blob/rpi-4.19.y/Documentation/kobject.txt)
+* [The Beginner’s Guide to Linux Kernel Module, Raspberry Pi and LED Matrix](https://blog.fazibear.me/the-beginners-guide-to-linux-kernel-module-raspberry-pi-and-led-matrix-790e8236e8e9)
 
 --
 
